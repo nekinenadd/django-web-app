@@ -1,5 +1,7 @@
 from django.shortcuts import render
-from app.models import Post,Tag
+from app.models import Post, Tag, Comments
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from .forms import CommentForm
 
 # Create your views here.
@@ -7,19 +9,24 @@ from .forms import CommentForm
 
 def index(request):
     posts = Post.objects.all()
-    context = {'posts':posts}
-    return render(request,'app/index.html',context)
+    context = {'posts': posts}
+    return render(request, 'app/index.html', context)
 
-def post_page(request,slug):
+
+def post_page(request, slug):
     post = Post.objects.get(slug=slug)
+    comments = Comments.objects.filter(post=post)
     form = CommentForm()
 
     if request.POST:
         comment_form = CommentForm(request.POST)
         if comment_form.is_valid:
             comment = comment_form.save(commit=False)
-
-
+            postId = request.POST.get("post_id")
+            post = Post.objects.get(id=postId)
+            comment.post = post
+            comment.save()
+            return HttpResponseRedirect(reverse('post_page',kwargs={'slug':slug}))
 
     if post.view_count is None:
         post.view_count = 1
@@ -27,5 +34,10 @@ def post_page(request,slug):
         post.view_count = post.view_count + 1
     post.save()
 
-    context = {"post":post,'form': form }
-    return render(request, 'app/post.html',context)
+    context = {
+            "post": post,
+            'form': form,
+            'comments':comments
+    }
+    
+    return render(request, 'app/post.html', context)
