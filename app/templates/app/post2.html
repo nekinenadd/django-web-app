@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %} Post {% endblock title %}
+{% block title %}Blog | The Super Blog{% endblock title %}
 {% load static %}
 
 {% block content %}
@@ -10,7 +10,7 @@
             <div class="page-top">
               <div class="top flex">
                 <div class="page-name">
-                  <a href="{% url 'home' %}" class="learn">
+                  <a href="#" class="learn">
                     <span class="material-icons"> keyboard_return </span> Go
                     back
                   </a>
@@ -31,20 +31,13 @@
                   </div>
                   <div class="track">
                     <i class="uil uil-users-alt"></i>
-                    <p class="view-count">
-                      {% if post.view_count == 1 %}
-                      {{post.view_count}} view
-                      {% else %}
-                      {{post.view_count}} views </p> 
-                      {% endif %}
+                    <p class="view-count">{{post.view_count}} view{{post.view_count|pluralize}}</p>
                   </div>
                   <div class="track">
                     <form action="" method="POST">
                       <button type="submit" class="btn btn-info">
                         <i class="uil uil-bookmark-full"></i>
                         <p class="bookmark">Bookmark</p>
-                        <!-- REMOVE BOOKMARK
-                          <i class="fa-solid fa-bookmark"></i> -->
                       </button>
                     </form>
                   </div>
@@ -60,12 +53,12 @@
                   </div>
                   <div class="blog-post-content">
                     <p>
-                     {{post.content}}
+                      {{post.content|safe}}
                     </p>
                     <div class="blog-tags">
-                      {% for tag in post.tag.all %}
-                      <div class="tag">{{tag.name}}</div>
-                      {% endfor %}
+                    {% for tag in post.tags.all %}
+                      <a href="{% url 'tag_page' tag.slug %}" class="tag">{{tag.name}}</a>
+                    {% endfor %}
                     </div>
                     <div class="social-share">
                       <div class="reactions">
@@ -94,16 +87,15 @@
                         </div>
                       </div>
                     </div>
-                    <!-- comments -->
-                    <!-- user comment -->
                     {% for comment in comments %}
+                    <!-- comments -->
                     <div class="user-comment">
                       <div class="author">
                         <div class="profile-pic">
-                          <img src="../images/author.svg" alt="" />
+                          <img src="{% static 'images/author.svg' %}" alt="" />
                         </div>
                         <div class="details">
-                          <p>{{ comment.name }}</p>
+                          <p>{{comment.name}}</p>
                           <small>{{comment.date|date}}</small>
                         </div>
                       </div>
@@ -111,58 +103,62 @@
                         <div class="comment-sec">
                           <div class="comment">
                             <p>
-                              {{ comment.content }}
+                              {{comment.content}}
                             </p>
                           </div>
                           <div class="reply">
                             <button onclick="toggleDiv(this)">Reply</button>
                           </div>
+                          <div class="comment-box" id="comment-reply-box">
+                            <h3>Reply to post</h3>
+                            <p>
+                              Your email address will not be published. Required fields
+                              are marked<span>*</span>
+                            </p>
+                            <form method="POST">
+                              {% csrf_token %}
+                              {{form.content}}
+                              <div class="grid-3">
+                                <input type="hidden" name="post_id" value="{{post.id}}">
+                                <input type="hidden" name="parent" value="{{comment.id}}">
+                                {{form.name}}
+                                {{form.email}}
+                                {{form.website}}
+                              </div>
+              
+                              <button class="btn btn-primary rounded">
+                                Post Reply
+                              </button>
+                            </form>
+                          </div>  
+
                         </div>
-                        <div class="comment-box" id="comment-reply-box">
-                          <h3>Reply to post</h3>
-                          <p>
-                            Your email address will not be published. Required fields
-                            are marked<span>*</span>
-                          </p>
-                          <form method="POST">
-                            {% csrf_token %}
-                            {{form.content}}                   
-                            <div class="grid-3">
-                              <input name="post_id" value={{post.id}} type="hidden">
-                              <input name="parent" value={{comment.id}} type="hidden">
-                              {{form.name}}
-                              {{form.email}}
-                              {{form.website}}
+                        
+                        {% for reply in comment.replies.all %}
+                        <div class="public-reply">
+                          <div class="author">
+                            <div class="profile-pic">
+                              <img src="{% static 'images/author.svg' %}" alt="" />
                             </div>
-            
-                            <button class="btn btn-primary rounded">
-                              Post Reply
-                            </button>
-                          </form>
-                        </div>  
+                            <div class="details">
+                              <p>{{reply.name}}</p>
+                              <small>{{reply.date|date}}</small>
+                            </div>
+                          </div>
+                          <div class="comment">
+                            <p>
+                              {{reply.content}}
+                            </p>
+                          </div>
+                        </div>
+                        {% endfor %}
+
+                        
+
                       </div>
                     </div>
-                    
-                    {% for reply in comment.replies.all %}
-                    <div class="public-reply">
-                      <div class="author">
-                        <div class="profile-pic">
-                          <img src="{% static 'images/author.svg' %}" alt="">
-                        </div>
-                        <div class="details">
-                          <p>{{reply.name}}</p>
-                          <small>{{reply.date|date}}</small>
-                        </div>
-                      </div>
-                      <div class="comment">
-                        <p>
-                          {{reply.content}}
-                        </p>
-                      </div>
-                    </div>
+                    <!-- Comment end -->
                     {% endfor %}
-                    {% endfor %}
-                    <!-- user comment end -->
                   </div>
                 </div>
                 <div class="comment-box">
@@ -173,12 +169,12 @@
                   </p>
                   <form method="POST">
                     {% csrf_token %}
-                    {{ form.content }}
+                    {{form.content}}
                     <div class="grid-3">
-                      <input name="post_id" value={{post.id}} type="hidden">
-                      {{ form.name }}
-                      {{ form.email }}
-                      {{ form.website }}
+                      <input type="hidden" name="post_id" value="{{post.id}}">
+                      {{form.name}}
+                      {{form.email}}
+                      {{form.website}}
                     </div>
                     <button class="btn btn-primary rounded">
                       Post comment
@@ -361,6 +357,5 @@
         </div>
       </div>
 
-{% endblock content %}
-
-
+    
+      {% endblock content %}
