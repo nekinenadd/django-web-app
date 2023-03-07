@@ -9,8 +9,8 @@ from .forms import CommentForm
 
 def index(request):
     posts = Post.objects.all()
-    top_posts = Post.objects.all().order_by('-view_count')[0:6]
-    recent_posts = Post.objects.all().order_by('-last_updated')[0:6]
+    top_posts = Post.objects.all().order_by('-view_count')[0:3]
+    recent_posts = Post.objects.all().order_by('-last_updated')[0:3]
 
     context = {'posts': posts, 'top_posts': top_posts,
                'recent_posts': recent_posts}
