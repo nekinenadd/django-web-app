@@ -1,5 +1,6 @@
 from django import forms
 from app.models import Comments,Subscribe
+from django.utils.translation import gettext_lazy as _
 
 
 
@@ -27,6 +28,13 @@ class SubscribeForm(forms.ModelForm):
     class Meta:
         model = Subscribe
         fields = '__all__'
+        labels = {'email':_('')}
+    
+    def __init__(self, *args, **kwargs):
+        super(SubscribeForm, self).__init__(*args, **kwargs)
+        self.fields['email'].widget.attrs.update({
+                'placeholder': 'example@example.com',
+            })
 
 
 
