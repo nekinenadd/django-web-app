@@ -1,10 +1,15 @@
 from django.shortcuts import render
-from app.models import Post, Tag, Comments
+from app.models import Post, Tag, Comments,Profile
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from .forms import CommentForm, SubscribeForm
 
 # Create your views here.
+
+def login_page(request):
+    form = None
+    context = {'form':form}
+    return render(request, 'app/index.html', context)
 
 
 def index(request):
@@ -79,10 +84,27 @@ def post_page(request, slug):
 
 def tag_page(request, slug):
     top_posts = Post.objects.all().order_by('-view_count')[0:3]
+    all_tags = Tag.objects.all()
     tags = Tag.objects.get(slug=slug)
     tag_posts = Post.objects.filter(tag=tags)
     context = {'tag': tags,
                'tag_posts':tag_posts,
-               'top_posts':top_posts
+               'top_posts':top_posts,
+               'all_tags':all_tags
                }
     return render(request, 'app/tag.html', context)
+
+
+
+def author_page(request,slug):
+    profile = Profile.objects.get(slug=slug)
+    top_posts = Post.objects.filter(author = profile.user).order_by('-view_count')[0:2]
+    recent_posts = Post.objects.filter(author = profile.user).order_by('-last_updated')[0:2]
+
+    context = {
+        'author_posts':profile,
+        'top_posts':top_posts,
+        'recent_posts':recent_posts
+    }
+    return render(request,'app/author.html',context)
+

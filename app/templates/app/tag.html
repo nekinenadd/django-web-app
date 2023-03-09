@@ -34,7 +34,7 @@
               <div class="grid-2 blog">
                 <!-- card -->
                 {% for post in tag_posts %}
-                <a href="#">
+                <a href="{% url 'post_page' post.slug %}">
                   <div class="card">
                     <div class="post-img">
                       <img src="{{post.image.url}}" alt="" />
@@ -46,10 +46,10 @@
                       </h3>
                       <div class="author">
                         <div class="profile-pic">
-                          <img src="../images/author.svg" alt="" />
+                          <img src="{{post.author.profile.profile_image.url}}" alt="" />
                         </div>
                         <div class="details">
-                          <p>Author name</p>
+                          <p>{{post.author.first_name}}</p>
                           <small>{{post.last_updated}}</small>
                         </div>
                       </div>
@@ -69,11 +69,11 @@
               <div class="grid-3 blog-grid">
                 <!-- card -->
                 {% for post in top_posts  %}
-                <a href="#">
+                <a href="{% url 'post_page' post.slug%}">
                   <div class="card">
                     <div class="post-img">
                       <img src="{{post.image.url}}" alt="" />
-                      <div class="tag">{{post.tag.name}}</div>
+                      <div class="tag">{{post.tag.all.0.name}}</div>
                     </div>
                     <div class="card-content">
                       <h3>
@@ -81,10 +81,10 @@
                       </h3>
                       <div class="author">
                         <div class="profile-pic">
-                          <img src="../images/author.svg" alt="" />
+                          <img src="{{post.author.profile.profile_image.url}}" alt=""/>
                         </div>
                         <div class="details">
-                          <p>Author name</p>
+                          <p>{{post.author.first_name}}</p>
                           <small>{{post.last_updated|date}}</small>
                         </div>
                       </div>
@@ -113,8 +113,11 @@
           <div class="block">
             <h2 class="title2">Other Tags</h2>
             <div class="blog-tags">
-              <div class="tag">Tag</div>
+              {% for tag in all_tags %}
+              <a href="{% url 'tags' tag.slug %}" class="tag">{{tag.name}}</a>
+              {% endfor %}
             </div>
+            
           </div>
         <!-- right layout end -->
       </div>
