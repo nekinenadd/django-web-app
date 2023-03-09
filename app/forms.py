@@ -27,6 +27,14 @@ class SubscribeForm(forms.ModelForm):
     class Meta:
         model = Subscribe
         fields = '__all__'
+        labels = {'email':('')}
+
+    def __init__(self, *args, **kwargs):
+        super(SubscribeForm, self).__init__(*args, **kwargs)
+        self.fields['email'].widget.attrs.update({
+                'placeholder': 'example@example.com',
+            })
+
 
 
 

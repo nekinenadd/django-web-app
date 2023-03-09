@@ -22,46 +22,40 @@
           </div>
           <div class="newsletter">
             <form method="POST">
-              <input
-                type="email"
-                name="email"
-                maxlength="100"
-                placeholder="Enter your email"
-                required=""
-                id="id_email"
-              />
+              {% csrf_token %}
+              {{subscribe_form}}
               <button class="btn btn-primary">Subscribe</button>
             </form>
+            {% if subscribe_success %}
+            <br><p>Subscribed successfuly</p>
+            {% endif %}
           </div>
         </center>
       </div>
     </main>
     <section class="sp">
+      {% for fpost in featured_post %}
       <div class="container">
         <div class="grid-2">
           <div class="post-img">
-            <img src="images/post.png" alt="" />
+            <img src="{{fpost.image.url}}" alt="" />
           </div>
           <div class="post-content">
             <div class="cetagory">
-              <p>Category name</p>
+              <p>{{fpost.tag.all.0.name}}</p>
             </div>
             <h1>
-              Lorem ipsum began as scrambled, nonsensical Latin derived from
-              Cicero's 1st-century BC text.
+              {{fpost.title}}
             </h1>
             <p class="des">
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iure
-              ullam animi repellat non ut delectus culpa! Iste quia corporis
-              illum doloribus facilis quo totam eveniet sapiente odit
-              cupiditate? Cumque, nam?
+              {{fpost.content}}
             </p>
             <a class="learn" href="#"
-              >Learn more <span class="material-icons"> trending_flat </span></a
-            >
+              >Learn more <span class="material-icons"> trending_flat </span></a>
           </div>
         </div>
       </div>
+      {% endfor %}
     </section>
     <section class="sp">
       <div class="container">
